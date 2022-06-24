@@ -1,0 +1,56 @@
+-- Below you can find all my Codewars solutions:
+
+#1 Hello SQL!
+Return a table with a single column named Greeting with the phrase 'hello world!'
+Please use Data Manipulation Language and not Data Definition Language to solve this Kata
+
+-- write your select statement to return hello world
+
+CREATE TABLE t1 (
+  Greeting VARCHAR (255) NOT NULL
+);
+INSERT INTO t1 (Greeting) 
+VALUES 
+  ('hello world!');
+select 
+  Greeting as "Greeting" 
+from 
+  t1;
+  
+#2  SQL Basics: Simple IN
+
+-- DESCRIPTION:
+For this challenge you need to create a SELECT statement, this SELECT statement will use an IN to check whether a department has had a sale with a price over 98.00 dollars.
+
+departments table schema
+id
+name
+sales table schema
+id
+department_id (department foreign key)
+name
+price
+card_name
+card_number
+transaction_date
+resultant table schema
+id
+name
+NOTE: sometimes a department will not not contain a sale over $98 so just resubmit.
+
+SELECT 
+  id, 
+  name 
+FROM 
+  departments 
+WHERE 
+  id IN (
+    select 
+      department_id 
+    from 
+      sales 
+    where 
+      price >= 98.00
+  );
+  
+# 3
