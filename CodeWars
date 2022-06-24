@@ -136,4 +136,183 @@ WHERE
   price IS NOT NULL 
   AND price > 50;
   
-# 5
+# 5 Subqueries master
+
+DESCRIPTION:
+The objective of this Kata is to show that you are proficient at string manipulation (and perhaps that you can use extensively subqueries).
+
+You will use people table but will focus solely on the name column
+
+name
+Greyson Tate Lebsack Jr.
+Elmore Clementina O'Conner
+you will be provided with a full name and you have to return the name in columns as follows.
+
+name	first_lastname	second_lastname
+Greyson Tate	Lebsack	Jr.
+Elmore	Clementina	O'Conner
+Note: Don't forget to remove spaces around names in your result. Note: Due to multicultural context, if full name has more than 3 words, consider first 2 as name
+
+
+select 
+  sna as name, 
+  s1 as first_lastname, 
+  s2 as second_lastname 
+from 
+  (
+    SELECT 
+      case when (
+        length(name)- length(
+          REPLACE(name, ' ', '')
+        ) = 2
+      ) then split_part(name, ' ', 1) else concat(
+        split_part(name, ' ', 1), 
+        ' ', 
+        split_part(name, ' ', 2)
+      ) end sna, 
+      case when (
+        length(name)- length(
+          REPLACE(name, ' ', '')
+        ) = 2
+      ) then split_part(name, ' ', 2) else split_part(name, ' ', 3) end s1, 
+      case when (
+        length(name)- length(
+          REPLACE(name, ' ', '')
+        ) = 2
+      ) then split_part(name, ' ', 3) else split_part(name, ' ', 4) end s2 
+    from 
+      people
+  ) t1;
+  
+  # 6 SQL Basics - Monsters using CASE
+  
+  DESCRIPTION:
+You have access to two tables named top_half and bottom_half, as follows:
+
+top_half schema
+
+id
+heads
+arms
+bottom_half schema
+
+id
+legs
+tails
+You must return a table with the format as follows:
+
+output schema
+
+id
+heads
+legs
+arms
+tails
+species
+The IDs on the tables match to make a full monster. For heads, arms, legs and tails you need to draw in the data from each table.
+
+For the species, if the monster has more heads than arms, more tails than legs, or both, it is a 'BEAST' else it is a 'WEIRDO'. This needs to be captured in the species column.
+
+All rows should be returned (10).
+
+Tests require the use of CASE. Order by species.
+
+/*  SQL  */
+select 
+  t.id, 
+  t.heads, 
+  b.legs, 
+  t.arms, 
+  b.tails, 
+  case when t.heads > t.arms 
+  OR b.tails > b.legs then 'BEAST' else 'WEIRDO' end species 
+from 
+  top_half t 
+  join bottom_half b on b.id = t.id 
+order by 
+  species;
+  
+  
+# 11 SQL Basics: Simple HAVING
+
+or this challenge you need to create a simple HAVING statement, you want to count how many people have the same age and return the groups with 10 or more people who have that age.
+
+people table schema
+id
+name
+age
+return table schema
+age
+total_people
+
+-- Create your SELECT statement here
+
+select age, count(id) total_people
+from people
+group by age
+having count(id) >= 10
+
+# 12 SQL Basics: Create a FUNCTION (DATES)
+
+DESCRIPTION:
+For this challenge you need to create a basic Age Calculator function which calculates the age in years on the age field of the peoples table.
+
+The function should be called agecalculator, it needs to take 1 date and calculate the age in years according to the date NOW and must return an integer.
+
+You may query the people table while testing but the query must only contain the function on your final submit.
+
+people table schema
+id
+name
+age
+
+CREATE FUNCTION ageCalculator (a timestamp) RETURNS integer AS $$ BEGIN RETURN (
+  SELECT 
+    date_part(
+      'year', 
+      age(a)
+    )
+):: int;
+END;
+$$ LANGUAGE plpgsql;
+
+# 12 SQL Bug Fixing: Fix the JOIN
+
+Oh no! Timmys been moved into the database divison of his software company but as we know Timmy loves making mistakes. Help Timmy keep his job by fixing his query...
+
+Timmy works for a statistical analysis company and has been given a task of calculating the highest average salary for a given job, the sample is compiled of 100 applicants each with a job and a salary. Timmy must display each unique job, the total average salary, the total people and the total salary and order by highest average salary. Timmy has some bugs in his query, help Timmy fix his query so he can keep his job!
+
+people table schema
+id
+name
+job table schema
+id
+people_id
+job_title
+salary
+resultant table schema
+job_title (unique)
+average_salary (float, 2 dp)
+total_people (int)
+total_salary (float, 2 dp)
+
+SELECT 
+  j.job_title as job_title, 
+  ROUND (
+    SUM(j.salary) / COUNT(p), 
+    2
+  ) :: float as average_salary, 
+  COUNT(p.id) as total_people, 
+  ROUND (
+    SUM(j.salary), 
+    2
+  ) :: float as total_salary 
+FROM 
+  people p 
+  JOIN job j ON p.id = j.people_id 
+GROUP BY 
+  j.job_title 
+ORDER BY 
+  average_salary DESC;
+
+
