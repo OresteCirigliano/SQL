@@ -53,4 +53,87 @@ WHERE
       price >= 98.00
   );
   
-# 3
+# 3 SQL Basics: Simple EXISTS
+
+For this challenge you need to create a SELECT statement that will contain data about departments that had a sale with a price over 98.00 dollars. This SELECT statement will have to use an EXISTS to achieve the task.
+
+departments table schema
+id
+name
+sales table schema
+id
+department_id (department foreign key)
+name
+price
+card_name
+card_number
+transaction_date
+resultant table schema
+id
+name
+
+-- Create your SELECT statement here
+SELECT 
+  id, 
+  name 
+FROM 
+  departments 
+WHERE 
+  EXISTS (
+    select 
+      d.id 
+    from 
+      sales s 
+      join departments d on d.id = s.department_id 
+    where 
+      price >= 98.00
+  ) 
+LIMIT 
+  5;
+
+# 4 SQL Basics: Simple NULL handling
+
+For this challenge you need to create a SELECT statement, this select statement must have NULL handling, using COALESCE and NULLIF.
+
+If no name is specified you must replace with [product name not found]
+
+If no card_name is specified you must replace with [card name not found]
+
+If no price is specified you must throw away the record, you must also filter the dataset by prices greater than 50.
+
+eusales table schema
+id
+name
+price
+card_name
+card_number
+transaction_date
+resultant table schema
+id
+name
+price (greater than 50.00)
+card_name
+card_number
+transaction_date
+
+-- Create your SELECT statement here
+SELECT 
+  id, 
+  COALESCE(
+    NULLIF(name, ''), 
+    '[product name not found]'
+  ) as name, 
+  price, 
+  COALESCE(
+    NULLIF(card_name, ''), 
+    '[card name not found]'
+  ) as card_name, 
+  card_number, 
+  transaction_date 
+FROM 
+  eusales 
+WHERE 
+  price IS NOT NULL 
+  AND price > 50;
+  
+# 5
